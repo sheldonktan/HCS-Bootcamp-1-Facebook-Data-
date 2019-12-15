@@ -24,7 +24,7 @@ NUMBER_TO_ANALYZE = 100000
 MESSAGE_THRESHOLD = 10
 MESSAGE_BOUND = 100000000
 NAME = "Sheldon Tan"
-PATH = "/messages (SD)/"
+PATH = "/messages/"
 
 
 # In[6]:
