@@ -20,21 +20,35 @@ import pylab as pl
 import datetime
 
 CURRENT_DIRECTORY = os.getcwd()
-NUMBER_TO_ANALYZE = 20
+NUMBER_TO_ANALYZE = 100000
 MESSAGE_THRESHOLD = 10
 MESSAGE_BOUND = 100000000
 NAME = "Sheldon Tan"
+PATH = "/messages (SD)/"
 
 
 # In[6]:
 
 
-def get_json_data(chat):
+def get_json_messages(chat):
     try:
-        json_location = CURRENT_DIRECTORY + "/messages/" + chat + "/message_1.json"
+        json_location = CURRENT_DIRECTORY + PATH + chat + "/message_1.json"
         with open(json_location) as json_file:
             json_data = json.load(json_file)
-            return json_data
+            messages = json_data["messages"]
+            counter = 1
+            n = 2
+        while counter == 1:
+            try:
+                json_location = CURRENT_DIRECTORY + PATH + chat + "/message_" + str(n) + ".json"
+                with open(json_location) as json_file:
+                    json_data = json.load(json_file)
+                    messages += json_data["messages"]
+                    n += 1
+            except IOError:
+                counter = 0
+                pass
+        return messages
     except IOError:
         pass # some things the directory aren't messages (DS_Store, stickers_used, etc.)
 
@@ -42,7 +56,7 @@ def get_json_data(chat):
 # In[7]:
 
 
-chats = os.listdir(CURRENT_DIRECTORY + "/messages/")[:NUMBER_TO_ANALYZE]
+chats = os.listdir(CURRENT_DIRECTORY + PATH)[:NUMBER_TO_ANALYZE]
 sorted_chats = []
 final_data_messages = {}
 final_data_times = {}
@@ -57,10 +71,9 @@ print('Analyzing ' + str(min(NUMBER_TO_ANALYZE, len(chats))) + ' chats...')
 
 for chat in chats:
     url = chat + '/message_1.json'
-    json_data = get_json_data(chat)
+    messages = get_json_messages(chat)
     print(chat)
-    if json_data != None:
-        messages = json_data["messages"]
+    if messages != None:
         if len(messages) >= MESSAGE_THRESHOLD and len(messages) <= MESSAGE_BOUND:
             total = len(messages)
             message_dict = {}
@@ -112,6 +125,17 @@ sorted_chats.sort(reverse=True)
 
 print('Finished processing chats...')
 
+def word_analysis(i, top_n_words):
+    total, chat, messages, message_dict, time_ratio_dict, word_dict = sorted_chats[i-1]
+    sorted_word_dict = sorted(word_dict.items(), key = lambda item: -item[1])
+    return sorted_word_dict[:top_n_words]
+
+print(word_analysis(1, 100))
+print(word_analysis(2, 100))
+print(word_analysis(3, 100))
+print(word_analysis(4, 100))
+print(word_analysis(5, 100))
+
 
 # In[10]:
 
@@ -120,6 +144,7 @@ for i, (total, chat, messages, message_dict, time_ratio_dict, word_dict) in enum
     number_messages = {}
     person_to_times = {}
     number_words = {}
+    word_dict_copy = word_dict
     if NAME in message_dict:
         my_ratio = message_dict[NAME]*100/total
     else:
@@ -134,24 +159,24 @@ for i, (total, chat, messages, message_dict, time_ratio_dict, word_dict) in enum
             chat_name += char
         else:
             break
-    max_word_1 = max(word_dict, key = word_dict.get)
-    max_value_1 = word_dict[max_word_1]
-    temp = word_dict.pop(max_word_1)
-    max_word_2 = max(word_dict, key = word_dict.get)
-    max_value_2 = word_dict[max_word_2]
-    temp = word_dict.pop(max_word_2)
-    max_word_3 = max(word_dict, key = word_dict.get)
-    max_value_3 = word_dict[max_word_3]
-    temp = word_dict.pop(max_word_3)
-    max_word_4 = max(word_dict, key = word_dict.get)
-    max_value_4 = word_dict[max_word_4]
-    temp = word_dict.pop(max_word_4)
-    max_word_5 = max(word_dict, key = word_dict.get)
-    max_value_5 = word_dict[max_word_5]
-    temp = word_dict.pop(max_word_5)
+    max_word_1 = max(word_dict_copy, key = word_dict_copy.get)
+    max_value_1 = word_dict_copy[max_word_1]
+    temp = word_dict_copy.pop(max_word_1)
+    max_word_2 = max(word_dict_copy, key = word_dict_copy.get)
+    max_value_2 = word_dict_copy[max_word_2]
+    temp = word_dict_copy.pop(max_word_2)
+    max_word_3 = max(word_dict_copy, key = word_dict_copy.get)
+    max_value_3 = word_dict_copy[max_word_3]
+    temp = word_dict_copy.pop(max_word_3)
+    max_word_4 = max(word_dict_copy, key = word_dict_copy.get)
+    max_value_4 = word_dict_copy[max_word_4]
+    temp = word_dict_copy.pop(max_word_4)
+    max_word_5 = max(word_dict_copy, key = word_dict_copy.get)
+    max_value_5 = word_dict_copy[max_word_5]
+    temp = word_dict_copy.pop(max_word_5)
     
 
-    print(str(i+1) + " - " + str(chat_name) + ": " + str(total) + " messages; My message ratio: " + str(my_ratio) + "%; My average messaging delay: " + str(my_time) + "mins; 5 most frequent words used: " + str(max_word_1) + " : " + str(max_value_1) + ", " + str(max_word_2) + " : " + str(max_value_2) + ", " + str(max_word_3) + " : " + str(max_value_3) + ", " + str(max_word_4) + " : " + str(max_value_4) + ", " + str(max_word_5) + " : " + str(max_value_5) + ", ")
+    print(str(i+1) + " - " + str(chat_name) + ": " + str(total) + " messages; My message ratio: " + str(my_ratio) + "%; Average messaging delay: " + str(time_ratio_dict) + "mins; 5 most frequent words used: " + str(max_word_1) + " : " + str(max_value_1) + ", " + str(max_word_2) + " : " + str(max_value_2) + ", " + str(max_word_3) + " : " + str(max_value_3) + ", " + str(max_word_4) + " : " + str(max_value_4) + ", " + str(max_word_5) + " : " + str(max_value_5) + ", ")
 
     for message in messages:
         try:
@@ -177,13 +202,6 @@ for i, (total, chat, messages, message_dict, time_ratio_dict, word_dict) in enum
 
 print('Found ' + str(invalid_message_count) + ' invalid messages...')
 print('Found ' + str(len(sorted_chats)) + ' chats with ' + str(MESSAGE_THRESHOLD) + ' messages or more')
-
-def word_analysis(i, top_n_words):
-    total, chat, messages, message_dict, time_ratio_dict, word_dict = sorted_chats[i]
-    sorted_word_dict = sorted(word_dict.items(), key = lambda item: -item[1])
-    return sorted_word_dict[:top_n_words]
-
-print(word_analysis(1, 20))
 
 # In[12]:
 
