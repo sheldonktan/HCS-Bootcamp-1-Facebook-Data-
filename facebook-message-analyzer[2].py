@@ -178,11 +178,12 @@ for i, (total, chat, messages, message_dict, time_ratio_dict, word_dict) in enum
 print('Found ' + str(invalid_message_count) + ' invalid messages...')
 print('Found ' + str(len(sorted_chats)) + ' chats with ' + str(MESSAGE_THRESHOLD) + ' messages or more')
 
-#def word_analysis(i):
-    #total, chat, messages, message_dict, time_ratio_dict, word_dict = sorted_chats[i]
-    #sorted_word_dict = sorted(word_dict.items(), key = lambda item: -item[1])
+def word_analysis(i, top_n_words):
+    total, chat, messages, message_dict, time_ratio_dict, word_dict = sorted_chats[i]
+    sorted_word_dict = sorted(word_dict.items(), key = lambda item: -item[1])
+    return sorted_word_dict[:top_n_words]
 
-#print(word_analysis(1))
+print(word_analysis(1, 20))
 
 # In[12]:
 
