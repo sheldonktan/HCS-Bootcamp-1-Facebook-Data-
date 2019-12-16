@@ -115,8 +115,7 @@ for chat in chats:
                         else:
                             word_dict[lower_word] = 1
             for person in time_dict:
-                time_ratio_dict[person] = time_dict[person]/(1000 * 60 * message_time_dict[person])
-# {'sender_name': 'Glen Lim', 'timestamp_ms': 1534827208419, 'content': 'I plucked Friday afternoon', 'type': 'Generic'}
+                time_ratio_dict[person] = round(time_dict[person]/(1000 * 60 * message_time_dict[person]),1)
 
                 
             sorted_chats.append((total, chat, messages, message_dict, time_ratio_dict, word_dict))
@@ -146,7 +145,7 @@ for i, (total, chat, messages, message_dict, time_ratio_dict, word_dict) in enum
     number_words = {}
     word_dict_copy = word_dict
     if NAME in message_dict:
-        my_ratio = message_dict[NAME]*100/total
+        my_ratio = round(message_dict[NAME]*100/total,1)
     else:
         my_ratio = 0
     if NAME in time_ratio_dict:
